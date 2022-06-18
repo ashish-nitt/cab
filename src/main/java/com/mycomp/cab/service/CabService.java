@@ -80,12 +80,16 @@ public class CabService {
 
     public Cab findCabForTrip(TripRequest tripRequest) {
         return cabRepository.findFirstByCityAndState(cityService.findCity(tripRequest.getCityId()), CabState.IDLE,
-                        Sort.by(Sort.Direction.ASC, "idleStateTimeStamp"))
+                        Sort.by(Sort.Direction.ASC, "idleStateStartTime"))
                 .orElseThrow(() -> new NoSuchElementException("Cab not found"));
     }
 
     public List<Cab> findAllCabs() {
         return StreamSupport.stream(cabRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    public Cab findCabByRequestId(Long requestId) {
+        return cabRepository.findByRegisterRequestId(requestId).orElseThrow(() -> new NoSuchElementException());
     }
 
     public Cab findCab(Long cabId) {

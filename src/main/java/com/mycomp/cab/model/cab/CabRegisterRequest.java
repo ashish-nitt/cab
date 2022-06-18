@@ -1,10 +1,7 @@
 package com.mycomp.cab.model.cab;
 
 import com.mycomp.cab.model.RequestStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +13,7 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 public class CabRegisterRequest implements Serializable {
     @Id

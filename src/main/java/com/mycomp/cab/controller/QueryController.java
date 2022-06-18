@@ -41,9 +41,14 @@ public class QueryController {
     }
 
     @GetMapping(value = "/cabs")
-    ResponseEntity<List<Long>> findCabs() {
+    ResponseEntity<List<Long>> findCabs(@RequestParam(value = "requestId", required = false) Long requestId) {
         System.out.println("QueryController.findCabs");
-        return ResponseEntity.ok(cabService.findAllCabs().stream().map(Cab::getId).collect(Collectors.toList()));
+        System.out.println("requestId = " + requestId);
+        if (requestId != null) {
+            return ResponseEntity.ok(Arrays.asList(cabService.findCabByRequestId(requestId).getId()));
+        } else {
+            return ResponseEntity.ok(cabService.findAllCabs().stream().map(Cab::getId).collect(Collectors.toList()));
+        }
     }
 
     @GetMapping(value = "/cab/{cabId}")

@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface CabRepository extends PagingAndSortingRepository<Cab, Long> {
     Optional<Cab> findFirstByCityAndState(City city, CabState state, Sort sort);
     Optional<Cab> findById(Long id);
+
+    Optional<Cab> findByRegisterRequestId(Long id);
     Optional<Cab> findByCabNumber(String cabNumber);
 }

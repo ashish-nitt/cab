@@ -1,6 +1,7 @@
 package com.mycomp.cab.service;
 
 import com.mycomp.cab.model.RequestStatus;
+import com.mycomp.cab.model.cab.Cab;
 import com.mycomp.cab.model.trip.Trip;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.model.trip.Tripstatus;
@@ -33,9 +34,9 @@ public class TripService {
             trip.setTripStatus(Tripstatus.NEW_REQUEST);
             trip.setTripRequestId(newTripRequest.getId());
             tripRepository.save(trip);
-            trip = tryAssignCab(trip);
-            tripRepository.save(trip);
+            trip = tryAssignCab(newTripRequest, trip);
             if (trip.getTripStatus().equals(Tripstatus.CAB_ASSIGNED)) {
+                tripRepository.save(trip);
                 requestService.updateRequestStatus(newTripRequest, RequestStatus.COMPLETED);
             }
         } catch (Exception ex) {
@@ -43,9 +44,15 @@ public class TripService {
         }
     }
 
-    @Transactional
-    public Trip tryAssignCab(Trip trip) {
-        tripRepository.save(trip);
-        return trip;
+    public Trip tryAssignCab(TripRequest tripRequest, Trip trip) {
+        try {
+            Cab cab = cabService.findCabForTrip(tripRequest);
+            if (cab != null) {
+                trip.setCabAssigned(cab);
+            }
+            return trip;
+        } catch (Exception ex) {
+            requestService.updateRequestStatus(tripRequest, RequestStatus.FAILED);
+        }
     }
 }

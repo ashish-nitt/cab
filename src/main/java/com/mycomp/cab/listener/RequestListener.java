@@ -39,7 +39,7 @@ public class RequestListener {
         cabService.updateCab(request);
     }
 
-    @JmsListener(destination = "CabRegisterRequest")
+    @JmsListener(destination = "TripRequest")
     public void onTripRequest(TripRequest request) {
         System.out.println("RequestListener.onTripRequest");
         tripService.handeTripRequest(request);
