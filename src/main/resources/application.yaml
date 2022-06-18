@@ -1,0 +1,16 @@
+
+server:
+  servlet:
+    context-path: /cabservice
+spring:
+  jpa:
+    show-sql: true
+  activemq:
+    in-memory: true
+    pool:
+      enabled: false
+    packages:
+      trusted: com.mycomp.cab.model,java.lang
+  jms:
+    template:
+      qos-enabled: true
