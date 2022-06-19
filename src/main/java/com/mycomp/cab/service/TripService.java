@@ -50,9 +50,9 @@ public class TripService {
             if (cab != null) {
                 trip.setCabAssigned(cab);
             }
-            return trip;
         } catch (Exception ex) {
             requestService.updateRequestStatus(tripRequest, RequestStatus.FAILED);
         }
+        return trip;
     }
 }
