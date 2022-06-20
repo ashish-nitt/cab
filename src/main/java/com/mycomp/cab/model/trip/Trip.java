@@ -20,7 +20,7 @@ public class Trip implements Serializable {
 
     @Enumerated
     private Tripstatus tripStatus;
-    private Long tripRequestId;
+    private Long requestId;
 
     @ManyToOne
     private Cab cabAssigned;

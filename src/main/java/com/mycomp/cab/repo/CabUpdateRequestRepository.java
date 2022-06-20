@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface CabUpdateRequestRepository extends CrudRepository<CabUpdateRequest, Long> {
-    Optional<CabUpdateRequest> findById(Long id);
 }

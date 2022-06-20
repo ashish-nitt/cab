@@ -87,8 +87,10 @@ public class RequestService {
     }
 
     public TripRequest publishRequest(TripRequest request) {
+        System.out.println("RequestService.publishRequest");
         request = updateRequestStatus(request, RequestStatus.PENDING);
         jmsTemplate.convertAndSend(tripRequestQueue, request);
+        System.out.println("request = " + request.getId());
         return request;
     }
 

@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface CabRegisterRequestRepository extends CrudRepository<CabRegisterRequest, Long> {
-    Optional<CabRegisterRequest> findById(Long id);
 }

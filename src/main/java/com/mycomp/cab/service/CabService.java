@@ -1,11 +1,12 @@
 package com.mycomp.cab.service;
 
-import com.mycomp.cab.model.*;
+import com.mycomp.cab.model.RequestStatus;
 import com.mycomp.cab.model.cab.Cab;
 import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.cab.CabState;
 import com.mycomp.cab.model.cab.CabUpdateRequest;
 import com.mycomp.cab.model.city.City;
+import com.mycomp.cab.model.trip.Trip;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.repo.CabRegisterRequestRepository;
 import com.mycomp.cab.repo.CabRepository;
@@ -78,6 +79,28 @@ public class CabService {
         }
     }
 
+    public void bookCab(Long cabId, Long requestId) {
+        Cab cab = findCab(cabId);
+        if (!cab.getState().equals(CabState.ON_TRIP)) {
+            cab.setState(CabState.ON_TRIP);
+        } else {
+            throw new IllegalStateException("Cab is already booked");
+        }
+        cab.setUpdateRequestId(requestId);
+        cabRepository.save(cab);
+    }
+
+    public void freeCab(Long cabId, Long requestId) {
+        Cab cab = findCab(cabId);
+        if (cab.getState().equals(CabState.ON_TRIP)) {
+            cab.setState(CabState.IDLE);
+        } else {
+            throw new IllegalStateException("Cab is not booked");
+        }
+        cab.setUpdateRequestId(requestId);
+        cabRepository.save(cab);
+    }
+
     public Cab findCabForTrip(TripRequest tripRequest) {
         return cabRepository.findFirstByCityAndState(cityService.findCity(tripRequest.getCityId()), CabState.IDLE,
                         Sort.by(Sort.Direction.ASC, "idleStateStartTime"))
@@ -89,7 +112,7 @@ public class CabService {
     }
 
     public Cab findCabByRequestId(Long requestId) {
-        return cabRepository.findByRegisterRequestId(requestId).orElseThrow(() -> new NoSuchElementException());
+        return cabRepository.findByRegisterRequestId(requestId).orElseThrow(() -> new NoSuchElementException("Request id not found"));
     }
 
     public Cab findCab(Long cabId) {

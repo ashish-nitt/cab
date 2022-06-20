@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface CityOnboardRequestRepository extends CrudRepository<CityOnboardRequest, Long> {
-    Optional<CityOnboardRequest> findById(Long id);
 }

@@ -3,10 +3,14 @@ package com.mycomp.cab.controller;
 
 import com.mycomp.cab.model.cab.Cab;
 import com.mycomp.cab.model.city.City;
+import com.mycomp.cab.model.trip.Trip;
+import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.service.CabService;
 import com.mycomp.cab.service.CityService;
+import com.mycomp.cab.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,8 @@ public class QueryController {
     CabService cabService;
     @Autowired
     CityService cityService;
+    @Autowired
+    TripService tripService;
 
     @GetMapping(value = "/cities")
     ResponseEntity<List<Long>> findCities(@RequestParam(value = "requestId", required = false) Long requestId) {
@@ -56,6 +62,24 @@ public class QueryController {
         System.out.println("QueryController.findCab");
         System.out.println("cabId = " + cabId);
         return ResponseEntity.ok(cabService.findCab(cabId));
+    }
+
+    @GetMapping(value = "/trips")
+    ResponseEntity<List<Long>> findTrips(@RequestParam(value = "requestId", required = false) Long requestId) {
+        System.out.println("QueryController.findTrips");
+        System.out.println("requestId = " + requestId);
+        if (requestId != null) {
+            return ResponseEntity.ok(Arrays.asList(tripService.findTripByRequestId(requestId).getId()));
+        } else {
+            return ResponseEntity.ok(tripService.findAllTrips().stream().map(Trip::getId).collect(Collectors.toList()));
+        }
+    }
+
+    @GetMapping(value = "/trip/{tripId}")
+    ResponseEntity<Trip> findTrip(@PathVariable Long tripId) {
+        System.out.println("QueryController.findTrip");
+        System.out.println("tripId = " + tripId);
+        return ResponseEntity.ok(tripService.findTrip(tripId));
     }
 
     @ExceptionHandler(NoSuchElementException.class)

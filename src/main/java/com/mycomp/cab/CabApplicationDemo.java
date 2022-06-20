@@ -1,8 +1,13 @@
 package com.mycomp.cab;
 
+import com.mycomp.cab.model.cab.Cab;
+import com.mycomp.cab.model.cab.CabState;
+import com.mycomp.cab.model.trip.Trip;
+import com.mycomp.cab.model.trip.Tripstatus;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.mycomp.cab.CabApplicationDemoUtils.*;
 
@@ -41,6 +46,25 @@ public class CabApplicationDemo {
         Assert.isTrue(cabIds.contains(cabId4), ERROR_STR);
         Assert.isTrue(cabIds.contains(cabId5), ERROR_STR);
         Assert.isTrue(cabIds.contains(cabId6), ERROR_STR);
+
+        Assert.isTrue(getTrips().isEmpty(), ERROR_STR);
+        Long requestId9 = postTripRequestResponseEntity(cityId1).getId();
+        Long requestId10 = postTripRequestResponseEntity(cityId1).getId();
+        CabApplicationDemoUtils.sleepForSomeTime();
+        Long tripId1 = getTripByRequestId(requestId9);
+        Long tripId2 = getTripByRequestId(requestId10);
+        Trip trip1 = getTrip(tripId1);
+        Trip trip2 = getTrip(tripId2);
+        Assert.isTrue(!Objects.equals(trip1.getCabAssigned().getId(), trip2.getCabAssigned().getId()), ERROR_STR);
+        Assert.isTrue(trip1.getTripStatus().equals(Tripstatus.CAB_ASSIGNED), ERROR_STR);
+        Assert.isTrue(trip2.getTripStatus().equals(Tripstatus.CAB_ASSIGNED), ERROR_STR);
+        Cab cabAssigned1 = getCab(trip1.getCabAssigned().getId());
+        Cab cabAssigned2 = getCab(trip1.getCabAssigned().getId());
+        Assert.isTrue(cabAssigned1.getState().equals(CabState.ON_TRIP), ERROR_STR);
+        Assert.isTrue(cabAssigned2.getState().equals(CabState.ON_TRIP), ERROR_STR);
+        List<Long> tripIds = getTrips();
+        Assert.isTrue(tripIds.contains(tripId1), ERROR_STR);
+        Assert.isTrue(tripIds.contains(tripId2), ERROR_STR);
     }
 
 

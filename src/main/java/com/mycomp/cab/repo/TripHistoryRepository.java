@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface TripHistoryRepository extends CrudRepository<Trip, Long> {
-    Optional<Trip> findById(Long id);
 }

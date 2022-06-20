@@ -1,9 +1,12 @@
 package com.mycomp.cab;
 
 import com.mycomp.cab.model.RequestStatus;
+import com.mycomp.cab.model.cab.Cab;
 import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.city.City;
 import com.mycomp.cab.model.city.CityOnboardRequest;
+import com.mycomp.cab.model.trip.Trip;
+import com.mycomp.cab.model.trip.TripRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -45,7 +48,6 @@ public class CabApplicationDemoUtils {
     static City getCity(long id) {
         ResponseEntity<City> response = restTemplate.getForEntity(BASE_URL + "/city/"+id, City.class);
         Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
-        Assert.isTrue(response.getBody().getName().equals("c1"), ERROR_STR);
         Assert.isTrue(response.getBody().equals(id), ERROR_STR);
         return response.getBody();
     }
@@ -68,6 +70,13 @@ public class CabApplicationDemoUtils {
         return response.getBody().length == 0 ? null : response.getBody()[0];
     }
 
+    static Cab getCab(long id) {
+        ResponseEntity<Cab> response = restTemplate.getForEntity(BASE_URL + "/cab/"+id, Cab.class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        Assert.isTrue(response.getBody().getId().equals(id), ERROR_STR);
+        return response.getBody();
+    }
+
     static List<Long> getCities() {
         ResponseEntity<Long[]> response = restTemplate.getForEntity(BASE_URL + "/cities", Long[].class);
         Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
@@ -76,6 +85,36 @@ public class CabApplicationDemoUtils {
 
     static List<Long> getCabs() {
         ResponseEntity<Long[]> response = restTemplate.getForEntity(BASE_URL + "/cabs", Long[].class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        return Arrays.asList(response.getBody());
+    }
+
+    static TripRequest postTripRequestResponseEntity(Long cityId) {
+        ResponseEntity<TripRequest> response = restTemplate.postForEntity(BASE_URL + "/trips", TripRequest.builder().cityId(cityId).build(), TripRequest.class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        Assert.isTrue(response.getBody().getCityId().equals(cityId), ERROR_STR);
+        Assert.isTrue(response.getBody().getStatus().equals(RequestStatus.PENDING), ERROR_STR);
+        return response.getBody();
+    }
+
+    static Long getTripByRequestId(Long requestId) {
+        System.out.println("CabApplication.getTripByRequestId requestId = " + requestId);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(BASE_URL + "/trips")
+                .queryParam("requestId", requestId);
+        ResponseEntity<Long[]> response = restTemplate.getForEntity(builder.build().toUri(), Long[].class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        return response.getBody().length == 0 ? null : response.getBody()[0];
+    }
+
+    static Trip getTrip(long id) {
+        ResponseEntity<Trip> response = restTemplate.getForEntity(BASE_URL + "/trip/"+id, Trip.class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        Assert.isTrue(response.getBody().getId().equals(id), ERROR_STR);
+        return response.getBody();
+    }
+
+    static List<Long> getTrips() {
+        ResponseEntity<Long[]> response = restTemplate.getForEntity(BASE_URL + "/trips", Long[].class);
         Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
         return Arrays.asList(response.getBody());
     }
