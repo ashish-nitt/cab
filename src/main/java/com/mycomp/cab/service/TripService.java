@@ -2,9 +2,8 @@ package com.mycomp.cab.service;
 
 import com.mycomp.cab.model.RequestStatus;
 import com.mycomp.cab.model.cab.Cab;
-import com.mycomp.cab.model.trip.Trip;
-import com.mycomp.cab.model.trip.TripRequest;
-import com.mycomp.cab.model.trip.Tripstatus;
+import com.mycomp.cab.model.trip.*;
+import com.mycomp.cab.repo.TripHistoryRepository;
 import com.mycomp.cab.repo.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,9 @@ public class TripService {
     RequestService requestService;
     @Autowired
     TripRepository tripRepository;
+
+    @Autowired
+    TripHistoryRepository tripHistoryRepository;
 
     @Transactional
     public void handeTripRequest(TripRequest newTripRequest) {
@@ -75,5 +77,28 @@ public class TripService {
 
     public List<Trip> findAllTrips() {
         return StreamSupport.stream(tripRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    public List<TripHistory> findAllTripHistories() {
+        return StreamSupport.stream(tripHistoryRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void handeTripEndRequest(TripEndRequest request) {
+        System.out.println("TripService.handeTripEndRequest");
+        try {
+            Trip trip = tripRepository.findById(request.getTripId()).orElseThrow(() -> new NoSuchElementException());
+            trip.setEndTime(new Date());
+            trip.setTripStatus(Tripstatus.COMPLETED);
+            tripRepository.save(trip);
+            cabService.freeCab(trip.getCabAssigned().getId(), request.getId());
+            TripHistory tripHistory = TripHistory.builder().tripId(trip.getId()).tripStartTime(trip.getStartTime())
+                    .tripEndTime(trip.getEndTime()).tripCity(trip.getCity()).tripCab(trip.getCabAssigned())
+                    .tripId(trip.getId()).build();
+            tripHistoryRepository.save(tripHistory);
+            requestService.updateRequestStatus(request, RequestStatus.COMPLETED);
+        } catch (Exception ex) {
+            requestService.updateRequestStatus(request, RequestStatus.FAILED);
+        }
     }
 }

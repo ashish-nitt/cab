@@ -4,6 +4,7 @@ package com.mycomp.cab.controller;
 import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.cab.CabUpdateRequest;
 import com.mycomp.cab.model.city.CityOnboardRequest;
+import com.mycomp.cab.model.trip.TripEndRequest;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,10 @@ public class TripController {
     @PostMapping(value = "/trips", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TripRequest> requestNewTrip(@RequestBody TripRequest request) {
         return ResponseEntity.ok(requestService.publishRequest(request));
+    }
+
+    @PatchMapping(value = "/trip/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TripEndRequest> requestEndTrip(@PathVariable Long id, @RequestBody TripEndRequest request) {
+        return ResponseEntity.ok(requestService.publishRequest(id, request));
     }
 }

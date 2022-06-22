@@ -4,6 +4,7 @@ package com.mycomp.cab.controller;
 import com.mycomp.cab.model.cab.Cab;
 import com.mycomp.cab.model.city.City;
 import com.mycomp.cab.model.trip.Trip;
+import com.mycomp.cab.model.trip.TripHistory;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.service.CabService;
 import com.mycomp.cab.service.CityService;
@@ -73,6 +74,12 @@ public class QueryController {
         } else {
             return ResponseEntity.ok(tripService.findAllTrips().stream().map(Trip::getId).collect(Collectors.toList()));
         }
+    }
+
+    @GetMapping(value = "/triphistories")
+    ResponseEntity<List<Long>> findTripHistories() {
+        System.out.println("QueryController.findTrips");
+        return ResponseEntity.ok(tripService.findAllTripHistories().stream().map(TripHistory::getId).collect(Collectors.toList()));
     }
 
     @GetMapping(value = "/trip/{tripId}")

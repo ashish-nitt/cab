@@ -1,6 +1,7 @@
 package com.mycomp.cab.service;
 
 import com.mycomp.cab.model.RequestStatus;
+import com.mycomp.cab.model.trip.TripEndRequest;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.cab.CabUpdateRequest;
@@ -39,6 +40,10 @@ public class RequestService {
     public Queue tripRequestQueue;
 
     @Autowired
+    @Qualifier("TripEndRequest")
+    public Queue tripEndRequestQueue;
+
+    @Autowired
     private CabRegisterRequestRepository cabRegisterRequestRepository;
 
     @Autowired
@@ -49,6 +54,9 @@ public class RequestService {
 
     @Autowired
     private TripRequestRepository tripRequestRepository;
+
+    @Autowired
+    private TripEndRequestRepository tripEndRequestRepository;
 
 
     public CabRegisterRequest publishRequest(CabRegisterRequest request) {
@@ -94,8 +102,21 @@ public class RequestService {
         return request;
     }
 
+    public TripEndRequest publishRequest(Long tripId, TripEndRequest request) {
+        System.out.println("RequestService.publishRequest");
+        request = updateRequestStatus(request, RequestStatus.PENDING);
+        jmsTemplate.convertAndSend(tripEndRequestQueue, request);
+        System.out.println("request = " + request.getId());
+        return request;
+    }
+
     public TripRequest updateRequestStatus(TripRequest request, RequestStatus status) {
         request.setStatus(status);
         return tripRequestRepository.save(request);
+    }
+
+    public TripEndRequest updateRequestStatus(TripEndRequest request, RequestStatus status) {
+        request.setStatus(status);
+        return tripEndRequestRepository.save(request);
     }
 }

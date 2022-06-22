@@ -3,6 +3,7 @@ package com.mycomp.cab.listener;
 import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.cab.CabUpdateRequest;
 import com.mycomp.cab.model.city.CityOnboardRequest;
+import com.mycomp.cab.model.trip.TripEndRequest;
 import com.mycomp.cab.model.trip.TripRequest;
 import com.mycomp.cab.service.CabService;
 import com.mycomp.cab.service.CityService;
@@ -43,5 +44,11 @@ public class RequestListener {
     public void onTripRequest(TripRequest request) {
         System.out.println("RequestListener.onTripRequest");
         tripService.handeTripRequest(request);
+    }
+
+    @JmsListener(destination = "TripEndRequest")
+    public void onTripEndRequest(TripEndRequest request) {
+        System.out.println("RequestListener.onTripRequest");
+        tripService.handeTripEndRequest(request);
     }
 }

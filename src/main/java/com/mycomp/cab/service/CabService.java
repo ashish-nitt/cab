@@ -98,6 +98,7 @@ public class CabService {
             throw new IllegalStateException("Cab is not booked");
         }
         cab.setUpdateRequestId(requestId);
+        cab.setIdleStateStartTime(new Date());
         cabRepository.save(cab);
     }
 

@@ -14,7 +14,6 @@ import static com.mycomp.cab.CabApplicationDemoUtils.*;
 public class CabApplicationDemo {
 
     public static void demo() {
-
         Assert.isTrue(getCities().isEmpty(), ERROR_STR);
         Long requestId1 = postCityOnboardRequestResponseEntity("c1").getId();
         Long requestId2 = postCityOnboardRequestResponseEntity("c2").getId();
@@ -65,6 +64,14 @@ public class CabApplicationDemo {
         List<Long> tripIds = getTrips();
         Assert.isTrue(tripIds.contains(tripId1), ERROR_STR);
         Assert.isTrue(tripIds.contains(tripId2), ERROR_STR);
+
+        Long reqEnd1 = postTripEndRequestResponseEntity(tripId1);
+        Long reqEnd2 = postTripEndRequestResponseEntity(tripId2);
+        CabApplicationDemoUtils.sleepForSomeTime();
+        Trip trip11 = getTrip(tripId1);
+        Trip trip22 = getTrip(tripId2);
+        Assert.isTrue(trip11.getTripStatus().equals(Tripstatus.COMPLETED), ERROR_STR);
+        Assert.isTrue(trip22.getTripStatus().equals(Tripstatus.COMPLETED), ERROR_STR);
     }
 
 

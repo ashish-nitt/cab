@@ -6,20 +6,33 @@ import com.mycomp.cab.model.cab.CabRegisterRequest;
 import com.mycomp.cab.model.city.City;
 import com.mycomp.cab.model.city.CityOnboardRequest;
 import com.mycomp.cab.model.trip.Trip;
+import com.mycomp.cab.model.trip.TripEndRequest;
 import com.mycomp.cab.model.trip.TripRequest;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
 public class CabApplicationDemoUtils {
     private static final String BASE_URL = "http://localhost:8080/cabservice";
 
-    static RestTemplate restTemplate = new RestTemplate();
+    public static RestTemplate restTemplate;
+
+    static {
+        restTemplate = new RestTemplate();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        restTemplate.setRequestFactory(requestFactory);
+    }
     static final String ERROR_STR = "RestCallfailed";
     static void sleepForSomeTime() {
         try {
@@ -115,6 +128,23 @@ public class CabApplicationDemoUtils {
 
     static List<Long> getTrips() {
         ResponseEntity<Long[]> response = restTemplate.getForEntity(BASE_URL + "/trips", Long[].class);
+        Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
+        return Arrays.asList(response.getBody());
+    }
+
+    static Long postTripEndRequestResponseEntity(Long id) {
+        try {
+            TripEndRequest response = restTemplate.patchForObject(new URI(BASE_URL + "/trip/"+id), TripEndRequest.builder().tripId(id).build(), TripEndRequest.class);
+            Assert.isTrue(response.getTripId().equals(id), ERROR_STR);
+            Assert.isTrue(response.getStatus().equals(RequestStatus.PENDING), ERROR_STR);
+            return response.getId();
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
+    static List<Long> getTripHistories() {
+        ResponseEntity<Long[]> response = restTemplate.getForEntity(BASE_URL + "/triphistories", Long[].class);
         Assert.isTrue(response.getStatusCode().equals(HttpStatus.OK), ERROR_STR);
         return Arrays.asList(response.getBody());
     }
